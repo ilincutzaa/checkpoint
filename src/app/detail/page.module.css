@@ -1,0 +1,33 @@
+.main {
+    background: linear-gradient(315deg, rgba(35.39, 38.55, 218.26, 0.19) 0%, #019A6C 76%, rgba(50.15, 0, 150.46, 0.21) 100%); background-blend-mode: lighten;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: 2vh;
+    font-size: 3vh;
+}
+
+.button{
+    width: 10vw;
+    height: 5vh;
+    border: none;
+    border-radius: 10px;
+    font-size: 90%;
+    cursor: pointer;
+    background-color: rgba(58, 58, 58, 0.81);
+}
+
+.button:hover{
+    background-color: #019A6C;
+}
+
+.info{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1vh;
+}

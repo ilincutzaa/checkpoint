@@ -1,7 +1,10 @@
-import Image from "next/image";
+import {GameList} from "@/app/components/game-list";
+import styles from "@/app/page.module.css"
 
 export default function Home() {
-  return (
-      <h1>Hello World!</h1>
-  )
+    return (
+        <main className={styles.main}>
+            <GameList />
+        </main>
+    );
 }

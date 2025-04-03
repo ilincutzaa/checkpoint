@@ -1,10 +1,10 @@
-import styles from "./page.module.css"
+import {GameCreateForm} from "@/app/components/game-create-form";
+import styles from '@/app/add/page.module.css'
 
-export default function ItemForm(){
+export default function Add() {
     return (
-        <div className={styles.container}>
-            <h1>Add user</h1>
-        </div>
-
-    )
+        <main className={styles.main}>
+            <GameCreateForm />
+        </main>
+    );
 }

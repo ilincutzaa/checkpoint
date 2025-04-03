@@ -1,0 +1,47 @@
+.column{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+}
+
+.row{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    gap: 10px;
+}
+
+.form{
+    min-height: 100vh;
+    padding-top: 10vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+}
+
+.inputArea{
+    display: flex;
+    flex-direction: column;
+    width: 25vw;
+    height: 20vh;
+    font-size: 20px;
+}
+
+.inputArea textarea{
+    height: 10vh;
+    font-size: 18px;
+}
+
+.inputArea input{
+    height: 5vh;
+    font-size: 15px;
+}
+
+.button{
+    width: 15vw;
+    height: 5vh;
+    border: none;
+    border-radius: 10px;
+    font-size: 90%;
+    cursor: pointer;
+}
