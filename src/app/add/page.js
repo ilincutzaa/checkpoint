@@ -1,10 +1,10 @@
-import styles from "./page.module.css"
+import {MessageCreateForm} from "@/app/components/message-create-form";
 
-export default function ItemForm(){
+
+export default function Add() {
     return (
-        <div className={styles.container}>
-            <h1>Add user</h1>
-        </div>
-
-    )
+        <main>
+            <MessageCreateForm />
+        </main>
+    );
 }

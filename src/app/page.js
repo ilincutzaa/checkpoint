@@ -1,7 +1,9 @@
-import Image from "next/image";
+import {MessageList} from "@/app/components/message-list";
 
 export default function Home() {
-  return (
-      <h1>Hello World!</h1>
-  )
+    return (
+        <main>
+            <MessageList />
+        </main>
+    );
 }
