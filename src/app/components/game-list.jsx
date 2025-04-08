@@ -15,6 +15,8 @@ export const GameList = () => {
     const [filterKey, setFilterKey] = useState("name");
     const [filterValue, setFilterValue] = useState("");
 
+    const maxHoursPlayed = Math.max(...games.map(game => game.hoursPlayed));
+
     const sortedGames = [...games].sort((a, b) => {
         if (typeof a[sortKey] === "number" && typeof b[sortKey] === "number") {
             return sortOrder === "asc" ? a[sortKey] - b[sortKey] : b[sortKey] - a[sortKey];
@@ -153,7 +155,13 @@ export const GameList = () => {
                                 <td className={styles.tdStyle}>{game.genre}</td>
                                 <td className={styles.tdStyle}>{game.platform}</td>
                                 <td className={styles.tdStyle}>{game.backlogPriority}</td>
-                                <td className={styles.tdStyle}>{game.hoursPlayed}</td>
+                                <td className={styles.tdStyle}
+                                    style={{
+                                        backgroundColor: game.hoursPlayed === maxHoursPlayed ? "gold" : "transparent",
+                                        fontWeight: game.hoursPlayed === maxHoursPlayed ? "bold" : "normal"
+                                    }}
+
+                                >{game.hoursPlayed}</td>
                                 <td className={styles.tdStyle}>{game.status}</td>
                                 <td className={styles.tdStyle}>{game.rating}</td>
 

@@ -15,9 +15,3 @@ export const createGameSchema = z.object({
     rating: z.number().int().min(0).max(5).default(0),
     description: z.string().min(0).max(511),
 })
-//
-// export const createGameSchema = z.object({
-//     text: z.string().min(1).max(191),
-//     likes: z.number().positive().min(0).default(0),
-//     date: z.string(),
-// })
