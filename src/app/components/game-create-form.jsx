@@ -1,13 +1,11 @@
 'use client';
 
-import {useGames} from "@/app/context/games-context";
 import {useRouter} from "next/navigation";
 import {createGameSchema} from "@/app/schemas";
 import {useState} from "react";
 import styles from "@/app/components/game-form.module.css"
 
 const GameCreateForm = () => {
-    const { games, setGames } = useGames();
     const router = useRouter();
 
     const [name, setName] = useState("");
@@ -24,10 +22,9 @@ const GameCreateForm = () => {
     const [rating, setRating] = useState(0);
     const [description, setDescription] = useState("");
 
-
     const [errorMessage, setErrorMessage] = useState("");
 
-    const handleSubmit = (event) => {
+    const handleSubmit = async (event) => {
         event.preventDefault();
 
         try{
@@ -44,22 +41,33 @@ const GameCreateForm = () => {
                 rating,
                 description,
             });
-            const newGame =
-                {
-                    id: crypto.randomUUID(),
-                    name,
-                    genre,
-                    platform,
-                    backlogPriority,
-                    hoursPlayed,
-                    timesCompleted,
-                    completionType,
-                    status,
-                    dateFirstFinished,
-                    rating,
-                    description,
-                };
-            setGames([...games, newGame]);
+
+            const newGame = {
+                id: crypto.randomUUID(),
+                name,
+                genre,
+                platform,
+                backlogPriority,
+                hoursPlayed,
+                timesCompleted,
+                completionType,
+                status,
+                dateFirstFinished,
+                rating,
+                description,
+            };
+
+            const response = await fetch('/api/games', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(newGame),
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to create game');
+            }
 
             setName("");
             setGenre("");
@@ -75,11 +83,10 @@ const GameCreateForm = () => {
             setErrorMessage("");
 
             router.push("/");
-        }catch(err){
+        } catch(err) {
             setErrorMessage("Please complete all the required fields");
             console.log(err);
         }
-
     };
 
     return (

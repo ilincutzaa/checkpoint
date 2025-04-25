@@ -1,4 +1,3 @@
-import {GamesProvider} from "@/app/context/games-context";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
@@ -21,7 +20,7 @@ export default function RootLayout({ children }) {
   return (
       <html lang="en">
         <body className={`${geistSans.variable} ${geistMono.variable}`}>
-          <GamesProvider>{children}</GamesProvider>
+          <div>{children}</div>
         </body>
       </html>
   );

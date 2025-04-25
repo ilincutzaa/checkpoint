@@ -1,13 +1,11 @@
 'use client';
 
-import {useGames} from "@/app/context/games-context";
 import {useRouter} from "next/navigation";
 import {createGameSchema} from "@/app/schemas";
 import {useEffect, useState} from "react";
 import styles from "@/app/components/game-form.module.css";
 
-const GameUpdateForm = ({selectedGame}) => {
-    const { games, setGames } = useGames();
+const GameUpdateForm = ({selectedGameID}) => {
     const router = useRouter();
 
     const [name, setName] = useState("");
@@ -25,24 +23,60 @@ const GameUpdateForm = ({selectedGame}) => {
     const [description, setDescription] = useState("");
 
     const [errorMessage, setErrorMessage] = useState("");
+    const [selectedGame, setSelectedGame] = useState(null);
+    const [isLoading, setIsLoading] = useState(true);
+
+
+    console.log(selectedGameID);
 
     useEffect(() => {
-        if(selectedGame) {
-            setName(selectedGame.name);
-            setGenre(selectedGame.genre);
-            setPlatform(selectedGame.platform);
-            setBacklogPriority(selectedGame.backlogPriority);
-            setHoursPlayed(selectedGame.hoursPlayed);
-            setTimesCompleted(selectedGame.timesCompleted);
-            setStatus(selectedGame.status);
-            setDateFirstFinished(selectedGame.dateFirstFinished);
-            setRating(selectedGame.rating);
-            setDescription(selectedGame.description);
-            setCompletionType(selectedGame.completionType);
-        }
-    }, [selectedGame]);
+        const fetchGame = async () => {
+            try {
+                const response = await fetch(`/api/games/${selectedGameID}`, {
+                    method: "GET"
+                });
+                if (!response.ok) {
+                    throw new Error('Failed to fetch game');
+                }
+                const game = await response.json();
+                setSelectedGame(game);
 
-    const handleSubmit = (event) => {
+                if(game) {
+                    setName(game.name);
+                    setGenre(game.genre);
+                    setPlatform(game.platform);
+                    setBacklogPriority(game.backlogPriority);
+                    setHoursPlayed(game.hoursPlayed);
+                    setTimesCompleted(game.timesCompleted);
+                    setStatus(game.status);
+                    setDateFirstFinished(game.dateFirstFinished);
+                    setRating(game.rating);
+                    setDescription(game.description);
+                    setCompletionType(game.completionType);
+                }
+            } catch (error) {
+                console.error('Error fetching game:', error);
+            }
+            finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchGame();
+
+    }, [selectedGameID]);
+
+    if (isLoading) {
+        return <h1>Loading...</h1>;
+    }
+
+    if(selectedGame == null) {
+        console.error('Error fetching game with id:' + selectedGameID);
+        return <h1>404 - Page Not Found</h1>
+    }
+
+
+    const handleSubmit = async (event) => {
         event.preventDefault();
 
         try{
@@ -60,26 +94,35 @@ const GameUpdateForm = ({selectedGame}) => {
                 description,
             });
 
-            const updatedGames = games.map(
-                game => game.id === selectedGame.id ?
-                    {...game,
-                        name,
-                        genre,
-                        platform,
-                        backlogPriority,
-                        hoursPlayed,
-                        timesCompleted,
-                        completionType,
-                        status,
-                        dateFirstFinished,
-                        rating,
-                        description,} : game
-            );
+            const updatedGame = {
+                id: selectedGameID,
+                name,
+                genre,
+                platform,
+                backlogPriority,
+                hoursPlayed,
+                timesCompleted,
+                completionType,
+                status,
+                dateFirstFinished,
+                rating,
+                description,
+            };
 
-            setGames(updatedGames);
+            const response = await fetch(`/api/games/${selectedGameID}`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(updatedGame),
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to update game');
+            }
+
             router.push("/");
-
-        }catch(e){
+        } catch(e) {
             setErrorMessage("Please complete all the required fields");
             console.log(e);
         }

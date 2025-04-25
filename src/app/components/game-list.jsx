@@ -1,19 +1,36 @@
 'use client';
 
-import {useGames} from "@/app/context/games-context";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import Link from "next/link";
 import styles from "@/app/components/game-list.module.css";
 
+
 export const GameList = () => {
-    const { games, setGames } = useGames();
-    const [selectedGame, setSelectedGame] = useState(null);
+    const [games, setGames] = useState([]);
+    const [selectedGameID, setSelectedGameID] = useState(null);
 
     const [sortKey, setSortKey] = useState("name");
     const [sortOrder, setSortOrder] = useState("asc");
 
     const [filterKey, setFilterKey] = useState("name");
     const [filterValue, setFilterValue] = useState("");
+
+    useEffect(() => {
+        const fetchGames = async () => {
+            try {
+                const response = await fetch('/api/games');
+                if (!response.ok) {
+                    throw new Error('Failed to fetch games');
+                }
+                const data = await response.json();
+                setGames(data);
+            } catch (error) {
+                console.error('Error fetching games:', error);
+            }
+        };
+
+        fetchGames();
+    }, []);
 
     const maxHoursPlayed = Math.max(...games.map(game => game.hoursPlayed));
 
@@ -35,9 +52,38 @@ export const GameList = () => {
     })
 
     const handleDelete = async () => {
-        if (selectedGame) {
-            setGames(games.filter(game => game.id !== selectedGame));
-            setSelectedGame(null);
+        if(!selectedGameID) return;
+
+        console.log(selectedGameID);
+        const confirmed = confirm("Do you really want to delete this game?");
+        if(!confirmed) return;
+
+        const res = await fetch(`/api/games/${selectedGameID}`, {
+            method: "DELETE"
+        })
+
+        if(res.ok){
+            setSelectedGameID(null);
+            const fetchGames = async () => {
+                try {
+                    const response = await fetch('/api/games', {
+                        method: "GET"
+                    });
+                    if (!response.ok) {
+                        throw new Error('Failed to fetch games');
+                    }
+                    const data = await response.json();
+                    setGames(data);
+                } catch (error) {
+                    console.error('Error fetching games:', error);
+                }
+            };
+
+            fetchGames();
+
+        } else{
+            const {error} = await res.json();
+            alert("Delete failed: " + error);
         }
     };
 
@@ -56,31 +102,31 @@ export const GameList = () => {
 
                 <button className={styles.button}
                     onClick={handleDelete}
-                    disabled={!selectedGame}
+                    disabled={!selectedGameID}
                     style={{
-                        backgroundColor: selectedGame ? "red" : "",
-                        cursor: selectedGame ? "pointer" : "not-allowed",
+                        backgroundColor: selectedGameID ? "red" : "",
+                        cursor: selectedGameID ? "pointer" : "not-allowed",
                     }}
                 >
                     Delete Game
                 </button>
 
-                <Link href={`/update?id=${selectedGame}`}>
+                <Link href={`/update?id=${selectedGameID}`}>
                     <button className={styles.button}
-                        disabled={!selectedGame}
+                        disabled={!selectedGameID}
                         style={{
-                            backgroundColor: selectedGame ? "orange" : "",
-                            cursor: selectedGame ? "pointer" : "not-allowed"
+                            backgroundColor: selectedGameID ? "orange" : "",
+                            cursor: selectedGameID ? "pointer" : "not-allowed"
                         }}
                     >Update Game</button>
                 </Link>
 
-                <Link href={`/detail?id=${selectedGame}`}>
+                <Link href={`/detail?id=${selectedGameID}`}>
                     <button className={styles.button}
-                            disabled={!selectedGame}
+                            disabled={!selectedGameID}
                             style={{
-                                backgroundColor: selectedGame ? "blue" : "",
-                                cursor: selectedGame ? "pointer" : "not-allowed"
+                                backgroundColor: selectedGameID ? "blue" : "",
+                                cursor: selectedGameID ? "pointer" : "not-allowed"
                             }}
                     >See Details</button>
                 </Link>
@@ -141,13 +187,13 @@ export const GameList = () => {
                             <tr className={styles.trStyle}
                                 key={game.id}
                                 onClick={() => {
-                                    if(selectedGame !== game.id)
-                                        setSelectedGame(game.id);
+                                    if(selectedGameID !== game.id)
+                                        setSelectedGameID(game.id);
                                     else
-                                        setSelectedGame(null);
+                                        setSelectedGameID(null);
                                 }}
                                 style={{
-                                    backgroundColor: selectedGame === game.id ? "darkviolet" : "black",
+                                    backgroundColor: selectedGameID === game.id ? "darkviolet" : "black",
 
                                 }}
                             >
