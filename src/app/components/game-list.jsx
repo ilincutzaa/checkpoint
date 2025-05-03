@@ -1,9 +1,10 @@
 'use client';
 
-import {useEffect, useState} from "react";
+import {useCallback, useEffect, useRef, useState} from "react";
 import Link from "next/link";
 import styles from "@/app/components/game-list.module.css";
-
+import {enqueueRequest, flushQueue} from "@/app/utils/requests-queue";
+import {useConnectionStable} from "@/app/hooks/connection-status";
 
 export const GameList = () => {
     const [games, setGames] = useState([]);
@@ -14,6 +15,17 @@ export const GameList = () => {
 
     const [filterKey, setFilterKey] = useState("name");
     const [filterValue, setFilterValue] = useState("");
+
+    const [visibleCount, setVisibleCount] = useState(10);
+    const loaderRef = useRef(null);
+
+    const isConnectionStable = useConnectionStable();
+
+    useEffect(() => {
+        if (isConnectionStable) {
+            flushQueue();
+        }
+    }, [isConnectionStable]);
 
     useEffect(() => {
         const fetchGames = async () => {
@@ -51,41 +63,77 @@ export const GameList = () => {
         return gameValue.includes(filterValue.toLowerCase());
     })
 
+    const visibleGames = filteredGames.slice(0, visibleCount);
+
     const handleDelete = async () => {
         if(!selectedGameID) return;
 
-        console.log(selectedGameID);
         const confirmed = confirm("Do you really want to delete this game?");
         if(!confirmed) return;
 
-        const res = await fetch(`/api/games/${selectedGameID}`, {
-            method: "DELETE"
-        })
-
-        if(res.ok){
-            setSelectedGameID(null);
-            const fetchGames = async () => {
-                try {
-                    const response = await fetch('/api/games', {
-                        method: "GET"
-                    });
-                    if (!response.ok) {
-                        throw new Error('Failed to fetch games');
-                    }
-                    const data = await response.json();
-                    setGames(data);
-                } catch (error) {
-                    console.error('Error fetching games:', error);
-                }
-            };
-
-            fetchGames();
-
-        } else{
-            const {error} = await res.json();
-            alert("Delete failed: " + error);
+        const request = {
+            method: "DELETE",
+            url: `/api/games/${selectedGameID}`
         }
+
+        const sendRequest = async () => {
+            const response = await fetch(request.url, {
+                method: request.method,
+            });
+
+            if(response.ok){
+                setSelectedGameID(null);
+                const fetchGames = async () => {
+                    try {
+                        const response = await fetch('/api/games', {
+                            method: "GET"
+                        });
+                        if (!response.ok) {
+                            throw new Error('Failed to fetch games');
+                        }
+                        const data = await response.json();
+                        setGames(data);
+                    } catch (error) {
+                        console.error('Error fetching games:', error);
+                    }
+                };
+
+                fetchGames();
+
+            } else{
+                const {error} = await response.json();
+                alert("Delete failed: " + error);
+            }
+        };
+
+        if (isConnectionStable) {
+            await sendRequest();
+        } else {
+            enqueueRequest(request);
+        }
+
     };
+
+    const handleObserver = useCallback((entries) => {
+        const target = entries[0];
+        if (target.isIntersecting) {
+            setVisibleCount((prev) => prev + 10);
+        }
+    }, []);
+
+    useEffect(() => {
+        const option = {
+            root: null,
+            rootMargin: "20px",
+            threshold: 1.0
+        };
+        const observer = new IntersectionObserver(handleObserver, option);
+        if (loaderRef.current) observer.observe(loaderRef.current);
+
+        return () => {
+            if (loaderRef.current) observer.unobserve(loaderRef.current);
+        };
+    }, [handleObserver]);
 
     return(
         <div className="mainContainer">
@@ -183,7 +231,7 @@ export const GameList = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {filteredGames.map((game) => (
+                        {visibleGames.map((game) => (
                             <tr className={styles.trStyle}
                                 key={game.id}
                                 onClick={() => {
@@ -216,6 +264,7 @@ export const GameList = () => {
                         ))}
                     </tbody>
                 </table>
+                <div ref={loaderRef} style={{ height: "50px" }}></div>
             </div>
         </div>
     );

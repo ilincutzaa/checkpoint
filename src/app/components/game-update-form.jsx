@@ -4,6 +4,8 @@ import {useRouter} from "next/navigation";
 import {createGameSchema} from "@/app/schemas";
 import {useEffect, useState} from "react";
 import styles from "@/app/components/game-form.module.css";
+import {enqueueRequest} from "@/app/utils/requests-queue";
+import {useConnectionStable} from "@/app/hooks/connection-status";
 
 const GameUpdateForm = ({selectedGameID}) => {
     const router = useRouter();
@@ -25,6 +27,8 @@ const GameUpdateForm = ({selectedGameID}) => {
     const [errorMessage, setErrorMessage] = useState("");
     const [selectedGame, setSelectedGame] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
+
+    const {isConnectionStable} = useConnectionStable();
 
 
     console.log(selectedGameID);
@@ -109,16 +113,29 @@ const GameUpdateForm = ({selectedGameID}) => {
                 description,
             };
 
-            const response = await fetch(`/api/games/${selectedGameID}`, {
-                method: 'PATCH',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+            const request = {
+                method: "PATCH",
                 body: JSON.stringify(updatedGame),
-            });
+                url: `/api/games/${selectedGameID}`,
+                headers: { "Content-Type": "application/json" },
+            }
 
-            if (!response.ok) {
-                throw new Error('Failed to update game');
+            const sendRequest = async () => {
+                const response = await fetch(request.url, {
+                    method: request.method,
+                    headers: request.headers,
+                    body: request.body,
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to update game');
+                }
+            };
+
+            if (isConnectionStable) {
+                await sendRequest();
+            } else {
+                enqueueRequest(request);
             }
 
             router.push("/");

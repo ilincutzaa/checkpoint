@@ -42,6 +42,8 @@
 
 .tableStyle{
     border-radius: 50px;
+    min-height: 80vh;
+    overflow-y: auto
 }
 
 .buttonsContainerStyle{

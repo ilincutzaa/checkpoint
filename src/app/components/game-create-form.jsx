@@ -4,6 +4,8 @@ import {useRouter} from "next/navigation";
 import {createGameSchema} from "@/app/schemas";
 import {useState} from "react";
 import styles from "@/app/components/game-form.module.css"
+import {useConnectionStable} from "@/app/hooks/connection-status";
+import {enqueueRequest} from "@/app/utils/requests-queue";
 
 const GameCreateForm = () => {
     const router = useRouter();
@@ -23,6 +25,8 @@ const GameCreateForm = () => {
     const [description, setDescription] = useState("");
 
     const [errorMessage, setErrorMessage] = useState("");
+
+    const isConnectionStable = useConnectionStable();
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -57,16 +61,29 @@ const GameCreateForm = () => {
                 description,
             };
 
-            const response = await fetch('/api/games', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+            const request = {
+                method: "POST",
                 body: JSON.stringify(newGame),
-            });
+                url: "/api/games",
+                headers: { "Content-Type": "application/json" },
+            }
 
-            if (!response.ok) {
-                throw new Error('Failed to create game');
+            const sendRequest = async () => {
+                const response = await fetch(request.url, {
+                    method: request.method,
+                    headers: request.headers,
+                    body: request.body,
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to create game');
+                }
+            };
+
+            if (isConnectionStable) {
+                await sendRequest();
+            } else {
+                enqueueRequest(request);
             }
 
             setName("");
