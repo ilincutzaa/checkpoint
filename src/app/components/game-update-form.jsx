@@ -28,7 +28,7 @@ const GameUpdateForm = ({selectedGameID}) => {
     const [selectedGame, setSelectedGame] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
 
-    const {isConnectionStable} = useConnectionStable();
+    const isConnectionStable = useConnectionStable();
 
 
     console.log(selectedGameID);
