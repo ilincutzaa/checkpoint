@@ -14,4 +14,6 @@ export const createGameSchema = z.object({
     dateFirstFinished: z.string(),
     rating: z.number().int().min(0).max(5).default(0),
     description: z.string().min(0).max(511),
+
+    tags: z.array(z.string().min(1)).optional(),
 })

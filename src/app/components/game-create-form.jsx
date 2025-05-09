@@ -1,7 +1,7 @@
 'use client';
 
 import {useRouter} from "next/navigation";
-import {createGameSchema} from "@/app/schemas";
+import {createGameSchema} from "@/app/schemas/game-schema.jsx";
 import {useState} from "react";
 import styles from "@/app/components/game-form.module.css"
 import {useConnectionStable} from "@/app/hooks/connection-status";

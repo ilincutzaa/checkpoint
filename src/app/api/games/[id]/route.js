@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { gamesData } from '../games-data';
-import {createGameSchema} from "@/app/schemas";
+import {createGameSchema} from "@/app/schemas/game-schema.jsx";
 
 export async function PATCH(req, { params }) {
     const { id } = params;

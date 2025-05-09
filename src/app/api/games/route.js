@@ -1,5 +1,5 @@
 import {NextResponse} from "next/server";
-import {createGameSchema} from "@/app/schemas";
+import {createGameSchema} from "@/app/schemas/game-schema.jsx";
 import {gamesData} from "@/app/api/games/games-data";
 
 
