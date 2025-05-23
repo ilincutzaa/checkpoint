@@ -11,7 +11,7 @@ export const createGameSchema = z.object({
     completionType: z.string().min(0).max(255),
     status: z.string().min(0).max(255),
 
-    dateFirstFinished: z.string(),
+    dateFirstFinished: z.string().optional().nullable(),
     rating: z.number().int().min(0).max(5).default(0),
     description: z.string().min(0).max(511),
 

@@ -7,7 +7,7 @@ import styles from "@/app/components/game-form.module.css"
 import {useConnectionStable} from "@/app/hooks/connection-status";
 import {enqueueRequest} from "@/app/utils/requests-queue";
 
-const GameCreateForm = () => {
+export default function GameCreateForm() {
     const router = useRouter();
 
     const [name, setName] = useState("");
@@ -47,7 +47,6 @@ const GameCreateForm = () => {
             });
 
             const newGame = {
-                id: crypto.randomUUID(),
                 name,
                 genre,
                 platform,
@@ -56,7 +55,7 @@ const GameCreateForm = () => {
                 timesCompleted,
                 completionType,
                 status,
-                dateFirstFinished,
+                dateFirstFinished: dateFirstFinished ? new Date(dateFirstFinished) : null,
                 rating,
                 description,
             };
@@ -93,13 +92,13 @@ const GameCreateForm = () => {
             setHoursPlayed(0);
             setTimesCompleted(0);
             setStatus("");
-            setDateFirstFinished(new Date().toISOString().slice(0, 16));
+            setDateFirstFinished("");
             setRating(0);
             setDescription("");
 
             setErrorMessage("");
 
-            router.push("/");
+            router.back();
         } catch(err) {
             setErrorMessage("Please complete all the required fields");
             console.log(err);
@@ -229,6 +228,9 @@ const GameCreateForm = () => {
                             onChange={(e) => setDescription(e.target.value)}
                         ></textarea>
                     </div>
+                    <div>
+                        <label htmlFor="tags">Tags</label>
+                    </div>
                 </div>
             </div>
             <div className={styles.row}>
@@ -236,7 +238,7 @@ const GameCreateForm = () => {
                     type="button"
                     className={styles.button}
                     onClick={() => {
-                        router.push("/");
+                        router.back();
                     }}
                     style={{backgroundColor: "red"}}
                 >Cancel</button>
@@ -250,5 +252,3 @@ const GameCreateForm = () => {
         </form>
     );
 };
-
-export {GameCreateForm}

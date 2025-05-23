@@ -1,0 +1,36 @@
+.loginForm{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+.mainContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    padding: 13vh;
+}
+
+.inputField{
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+}
+
+.loginButton{
+    height: 1.5rem;
+    width: 4rem;
+    font-size: 1rem;
+}
+
+.title {
+    font-size: 8rem;
+}
+
+.navLink{
+    text-decoration: underline;
+}

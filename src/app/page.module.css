@@ -5,3 +5,49 @@
   display: flex;
   flex-direction: column;
 }
+
+.title {
+  text-align: center;
+  align-content: center;
+  font-size: 25vw;
+}
+
+.loginButton{
+  font-size: 25px;
+  height: fit-content;
+  background-color: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.62);
+  padding: 2px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.signupButton{
+  font-size: 25px;
+  height: fit-content;
+  background-color: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.62);
+  padding: 2px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.topBorder{
+  display: flex;
+  justify-content: right;
+  flex-direction: row;
+  height: fit-content;
+  gap: 1vh;
+}
+
+.mainContent{
+  padding-top: 10vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.welcomeText{
+  font-weight: lighter;
+  display: flex;
+  justify-content: center;
+}

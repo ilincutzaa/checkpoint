@@ -7,7 +7,7 @@ import styles from "@/app/components/game-form.module.css";
 import {enqueueRequest} from "@/app/utils/requests-queue";
 import {useConnectionStable} from "@/app/hooks/connection-status";
 
-const GameUpdateForm = ({selectedGameID}) => {
+export default function GameUpdateForm({selectedGameID}){
     const router = useRouter();
 
     const [name, setName] = useState("");
@@ -53,7 +53,13 @@ const GameUpdateForm = ({selectedGameID}) => {
                     setHoursPlayed(game.hoursPlayed);
                     setTimesCompleted(game.timesCompleted);
                     setStatus(game.status);
-                    setDateFirstFinished(game.dateFirstFinished);
+                    if (game.dateFirstFinished) {
+                        const date = new Date(game.dateFirstFinished);
+                        const localISO = date.toISOString().slice(0, 16);
+                        setDateFirstFinished(localISO);
+                    } else {
+                        setDateFirstFinished("");
+                    }
                     setRating(game.rating);
                     setDescription(game.description);
                     setCompletionType(game.completionType);
@@ -88,18 +94,17 @@ const GameUpdateForm = ({selectedGameID}) => {
                 name,
                 genre,
                 platform,
-                backlogPriority,
-                hoursPlayed,
-                timesCompleted,
+                backlogPriority: Number(backlogPriority),
+                hoursPlayed: Number(hoursPlayed),
+                timesCompleted: Number(timesCompleted),
                 completionType,
                 status,
                 dateFirstFinished,
-                rating,
+                rating: Number(rating),
                 description,
             });
 
-            const updatedGame = {
-                id: selectedGameID,
+            console.log({
                 name,
                 genre,
                 platform,
@@ -111,10 +116,26 @@ const GameUpdateForm = ({selectedGameID}) => {
                 dateFirstFinished,
                 rating,
                 description,
+            });
+
+
+            const updatedGame = {
+                id: selectedGameID,
+                name,
+                genre,
+                platform,
+                backlogPriority,
+                hoursPlayed,
+                timesCompleted,
+                completionType,
+                status,
+                dateFirstFinished: dateFirstFinished ? dateFirstFinished : null,
+                rating,
+                description,
             };
 
             const request = {
-                method: "PATCH",
+                method: "PUT",
                 body: JSON.stringify(updatedGame),
                 url: `/api/games/${selectedGameID}`,
                 headers: { "Content-Type": "application/json" },
@@ -138,7 +159,7 @@ const GameUpdateForm = ({selectedGameID}) => {
                 enqueueRequest(request);
             }
 
-            router.push("/");
+            router.back();
         } catch(e) {
             setErrorMessage("Please complete all the required fields");
             console.log(e);
@@ -274,7 +295,7 @@ const GameUpdateForm = ({selectedGameID}) => {
                 <button type="button"
                         className={styles.button}
                         onClick={() => {
-                            router.push("/");
+                            router.back();
                         }}
                         style={{backgroundColor: "red"}}
                 >Discard Changes</button>
@@ -287,5 +308,3 @@ const GameUpdateForm = ({selectedGameID}) => {
         </form>
     );
 };
-
-export {GameUpdateForm}

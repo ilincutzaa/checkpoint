@@ -3,11 +3,10 @@ import styles from "@/app/components/game-detail.module.css";
 import {useRouter} from "next/navigation";
 
 
-export const GameDetail = ({selectedGameID}) => {
+export default function GameDetail({selectedGameID}) {
     const [isLoading, setIsLoading] = useState(true);
     const [selectedGame, setSelectedGame] = useState(null);
 
-    console.log(selectedGameID);
     const router = useRouter();
     useEffect(() => {
         const fetchGame = async () => {
@@ -59,7 +58,7 @@ export const GameDetail = ({selectedGameID}) => {
             <div>
                 <button className={styles.button}
                         onClick={() => {
-                            router.push("/")
+                            router.back()
                         }}
                 >Back
                 </button>

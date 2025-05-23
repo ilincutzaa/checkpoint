@@ -2,7 +2,7 @@
 
 import {useSearchParams} from "next/navigation";
 import styles from "@/app/detail/page.module.css"
-import {GameDetail} from "@/app/components/game-detail";
+import GameDetail from "@/app/components/game-detail";
 
 export default function Detail() {
     const searchParams = useSearchParams();

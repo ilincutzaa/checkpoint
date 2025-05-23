@@ -1,46 +1,37 @@
 import { NextResponse } from 'next/server';
-import { gamesData } from '../games-data';
-import {createGameSchema} from "@/app/schemas/game-schema.jsx";
+import {Game, Tag} from 'models/index.js'
 
-export async function PATCH(req, { params }) {
-    const { id } = params;
+export async function GET(_, { params }) {
+    const parameters = await params
+    const game = await Game.findByPk(parameters.id, { include: Tag });
+    return game
+        ? NextResponse.json(game)
+        : NextResponse.json({ error: 'Not found' }, { status: 404 });
+}
+
+export async function PUT(req, { params }) {
     const body = await req.json();
+    const parameters = await params
 
-    try {
-        const existingGame = gamesData.get().find(g => g.id === id);
-        if (!existingGame) {
-            return new NextResponse(JSON.stringify({ error: "Game not found" }), { status: 404 });
-        }
+    const { tags = [], ...gameData } = body;
 
-        const updatedFields = createGameSchema.partial().parse(body);
-        const updatedGame = { ...existingGame, ...updatedFields };
+    const game = await Game.findByPk(parameters.id);
+    if (!game) return NextResponse.json({ error: 'Not found' }, { status: 404 });
 
-        gamesData.update(gamesData.get().map(game => (game.id === id ? updatedGame : game)));
-
-        return NextResponse.json(updatedGame, { status: 200 });
-    } catch (error) {
-        return new NextResponse(JSON.stringify({ error: error.message }), { status: 400 });
-    }
-}
-
-export async function DELETE(req, { params }) {
-    const { id } = await params;
-    const gameExists = gamesData.get().some(game => game.id === id);
-    if (!gameExists) {
-        return new NextResponse(JSON.stringify({ error: "Game not found" }), { status: 404 });
+    await game.update(gameData);
+    if (tags.length) {
+        await game.setTags(tags);
     }
 
-    gamesData.update(gamesData.get().filter(game => game.id !== id));
-    return new NextResponse(null, { status: 204 });
-}
-
-export async function GET(req, { params }) {
-    const { id } = await params;
-
-    const gameExists = gamesData.get().some(game => game.id === id);
-    if (!gameExists) {
-        return new NextResponse(JSON.stringify({ error: "Game not found" }), { status: 404 });
-    }
-    const game = gamesData.get().find(game => game.id === id);
     return NextResponse.json(game);
+}
+
+export async function DELETE(_, { params }) {
+    const parameters = await params
+
+    const game = await Game.findByPk(parameters.id);
+    if (!game) return NextResponse.json({ error: 'Not found' }, { status: 404 });
+
+    await game.destroy();
+    return NextResponse.json({ message: 'Deleted' });
 }

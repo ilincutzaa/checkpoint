@@ -22,13 +22,14 @@
     padding: 10px;
     border: 1px solid white;
     text-align: center;
-    background-color: rgba(0, 0, 0, 0.48);
+    background-color: rgba(0, 0, 0, 0.1);
 }
 
 .tdStyle{
     padding: 10px;
     border: 1px solid gray;
     text-align: center;
+    background-color: rgba(0, 0, 0, 0.1);
 }
 
 .trStyle{
@@ -41,7 +42,6 @@
 }
 
 .tableStyle{
-    border-radius: 50px;
     min-height: 80vh;
     overflow-y: auto
 }
@@ -60,4 +60,8 @@
     flex-wrap: wrap;
     justify-content: space-between;
     align-items: center;
+}
+
+.mainContainerStyle{
+    padding: 2rem;
 }

@@ -1,7 +1,7 @@
 'use client'
 
 import {useSearchParams} from "next/navigation";
-import {GameUpdateForm} from "@/app/components/game-update-form";
+import GameUpdateForm from "@/app/components/game-update-form";
 import styles from "@/app/update/page.module.css"
 
 export default function Update () {

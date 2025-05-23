@@ -1,7 +1,7 @@
 import {useEffect, useState} from "react";
 
 export function useServerStatus(pingUrl = '/api/health') {
-    const [isServerDown, setIsServerDown] = useState(true);
+    const [isServerDown, setIsServerDown] = useState(false);
 
     useEffect(() => {
         const interval = setInterval(async () => {

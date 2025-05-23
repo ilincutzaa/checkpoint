@@ -1,12 +1,12 @@
 'use client';
 
-import {useCallback, useEffect, useRef, useState} from "react";
+import {useCallback, useEffect, useState} from "react";
 import Link from "next/link";
 import styles from "@/app/components/game-list.module.css";
 import {enqueueRequest, flushQueue} from "@/app/utils/requests-queue";
 import {useConnectionStable} from "@/app/hooks/connection-status";
 
-export const GameList = () => {
+export default function GameList() {
     const [games, setGames] = useState([]);
     const [selectedGameID, setSelectedGameID] = useState(null);
 
@@ -16,10 +16,13 @@ export const GameList = () => {
     const [filterKey, setFilterKey] = useState("name");
     const [filterValue, setFilterValue] = useState("");
 
-    const [visibleCount, setVisibleCount] = useState(10);
-    const loaderRef = useRef(null);
-
     const isConnectionStable = useConnectionStable();
+
+    const [loading, setLoading] = useState(true);
+
+    const [totalGames, setTotalGames] = useState(0);
+    const [page, setPage] = useState(1);
+    const pageSize = 10;
 
     useEffect(() => {
         if (isConnectionStable) {
@@ -27,43 +30,41 @@ export const GameList = () => {
         }
     }, [isConnectionStable]);
 
-    useEffect(() => {
-        const fetchGames = async () => {
-            try {
-                const response = await fetch('/api/games');
-                if (!response.ok) {
-                    throw new Error('Failed to fetch games');
-                }
-                const data = await response.json();
-                setGames(data);
-            } catch (error) {
-                console.error('Error fetching games:', error);
-            }
-        };
+    const fetchGames = useCallback(async () => {
+        setLoading(true);
+        try {
+            const params = new URLSearchParams();
 
+            if (filterValue.trim()) {
+                params.set(filterKey, filterValue.trim());
+            }
+
+            params.set("sortBy", sortKey);
+            params.set("order", sortOrder);
+            params.set("limit", pageSize);
+            params.set("offset", (page - 1) * pageSize);
+
+            const url = `/api/games?${params.toString()}`;
+            const response = await fetch(url);
+
+            if (!response.ok) throw new Error("Failed to fetch games");
+            const data = await response.json();
+            setGames(data.games);
+            setTotalGames(data.total);
+        } catch (error) {
+            console.error("Error fetching games:", error);
+        } finally {
+            setLoading(false);
+        }
+    }, [sortKey, sortOrder, filterKey, filterValue, page]);
+
+    useEffect(() => {
         fetchGames();
-    }, []);
+    }, [fetchGames]);
+
+    const totalPages = Math.ceil(totalGames / pageSize);
 
     const maxHoursPlayed = Math.max(...games.map(game => game.hoursPlayed));
-
-    const sortedGames = [...games].sort((a, b) => {
-        if (typeof a[sortKey] === "number" && typeof b[sortKey] === "number") {
-            return sortOrder === "asc" ? a[sortKey] - b[sortKey] : b[sortKey] - a[sortKey];
-        } else {
-            return sortOrder === "asc"
-                ? a[sortKey].localeCompare(b[sortKey])
-                : b[sortKey].localeCompare(a[sortKey]);
-        }
-    });
-
-
-    const filteredGames = sortedGames.filter((game) => {
-        if(!filterValue.trim()) return true;
-        const gameValue = String(game[filterKey]).toLowerCase();
-        return gameValue.includes(filterValue.toLowerCase());
-    })
-
-    const visibleGames = filteredGames.slice(0, visibleCount);
 
     const handleDelete = async () => {
         if(!selectedGameID) return;
@@ -84,6 +85,7 @@ export const GameList = () => {
             if(response.ok){
                 setSelectedGameID(null);
                 const fetchGames = async () => {
+                    setLoading(true);
                     try {
                         const response = await fetch('/api/games', {
                             method: "GET"
@@ -95,6 +97,8 @@ export const GameList = () => {
                         setGames(data);
                     } catch (error) {
                         console.error('Error fetching games:', error);
+                    } finally {
+                        setLoading(false);
                     }
                 };
 
@@ -114,29 +118,8 @@ export const GameList = () => {
 
     };
 
-    const handleObserver = useCallback((entries) => {
-        const target = entries[0];
-        if (target.isIntersecting) {
-            setVisibleCount((prev) => prev + 10);
-        }
-    }, []);
-
-    useEffect(() => {
-        const option = {
-            root: null,
-            rootMargin: "20px",
-            threshold: 1.0
-        };
-        const observer = new IntersectionObserver(handleObserver, option);
-        if (loaderRef.current) observer.observe(loaderRef.current);
-
-        return () => {
-            if (loaderRef.current) observer.unobserve(loaderRef.current);
-        };
-    }, [handleObserver]);
-
     return(
-        <div className="mainContainer">
+        <div className={styles.mainContainerStyle}>
             <div className={styles.buttonsContainerStyle}>
                 <Link href="/add">
                     <button className={styles.button}
@@ -217,54 +200,72 @@ export const GameList = () => {
                 </div>
             </div>
             <div className={styles.tableStyle}>
-                <table style={{ width: "100%", borderCollapse: "collapse" }}>
-                    <thead>
-                        <tr>
-                            <th className={styles.thStyle}>Name</th>
-                            <th className={styles.thStyle}>Genre</th>
-                            <th className={styles.thStyle}>Platform</th>
-                            <th className={styles.thStyle}>Backlog Priority</th>
-                            <th className={styles.thStyle}>Hours Played</th>
-                            <th className={styles.thStyle}>Status</th>
-                            <th className={styles.thStyle}>Rating</th>
-
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {visibleGames.map((game) => (
-                            <tr className={styles.trStyle}
-                                key={game.id}
-                                onClick={() => {
-                                    if(selectedGameID !== game.id)
-                                        setSelectedGameID(game.id);
-                                    else
-                                        setSelectedGameID(null);
-                                }}
-                                style={{
-                                    backgroundColor: selectedGameID === game.id ? "darkviolet" : "black",
-
-                                }}
-                            >
-                                <td className={styles.tdStyle}>{game.name}</td>
-                                <td className={styles.tdStyle}>{game.genre}</td>
-                                <td className={styles.tdStyle}>{game.platform}</td>
-                                <td className={styles.tdStyle}>{game.backlogPriority}</td>
-                                <td className={styles.tdStyle}
-                                    style={{
-                                        backgroundColor: game.hoursPlayed === maxHoursPlayed ? "gold" : "transparent",
-                                        fontWeight: game.hoursPlayed === maxHoursPlayed ? "bold" : "normal"
-                                    }}
-
-                                >{game.hoursPlayed}</td>
-                                <td className={styles.tdStyle}>{game.status}</td>
-                                <td className={styles.tdStyle}>{game.rating}</td>
-
+                {loading ? (
+                    <p style={{ textAlign: "center", padding: "20px" }}>Loading...</p>
+                ) : (
+                    <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                        <thead>
+                            <tr>
+                                <th className={styles.thStyle}>Name</th>
+                                <th className={styles.thStyle}>Genre</th>
+                                <th className={styles.thStyle}>Platform</th>
+                                <th className={styles.thStyle}>Backlog Priority</th>
+                                <th className={styles.thStyle}>Hours Played</th>
+                                <th className={styles.thStyle}>Status</th>
+                                <th className={styles.thStyle}>Rating</th>
 
                             </tr>
-                        ))}
-                    </tbody>
-                </table>
-                <div ref={loaderRef} style={{ height: "50px" }}></div>
+                        </thead>
+                        <tbody>
+                            {games.map((game) => (
+                                <tr className={styles.trStyle}
+                                    key={game.id}
+                                    onClick={() => {
+                                        if(selectedGameID !== game.id)
+                                            setSelectedGameID(game.id);
+                                        else
+                                            setSelectedGameID(null);
+                                    }}
+                                    style={{
+                                        backgroundColor: selectedGameID === game.id ? "darkviolet" : "rgba(255, 255, 255, 0.06)",
+
+                                    }}
+                                >
+                                    <td className={styles.tdStyle}>{game.name}</td>
+                                    <td className={styles.tdStyle}>{game.genre}</td>
+                                    <td className={styles.tdStyle}>{game.platform}</td>
+                                    <td className={styles.tdStyle}>{game.backlogPriority}</td>
+                                    <td className={styles.tdStyle}
+                                        style={{
+                                            backgroundColor: game.hoursPlayed === maxHoursPlayed ? "gold" : "transparent",
+                                            fontWeight: game.hoursPlayed === maxHoursPlayed ? "bold" : "normal"
+                                        }}
+
+                                    >{game.hoursPlayed}</td>
+                                    <td className={styles.tdStyle}>{game.status}</td>
+                                    <td className={styles.tdStyle}>{game.rating}</td>
+
+
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                )}
+                <div className="flex gap-2 mt-4">
+                    <button
+                        onClick={() => setPage(prev => Math.max(prev - 1, 1))}
+                        disabled={page === 1}
+                    >
+                        Previous
+                    </button>
+                    <span>Page {page} of {totalPages}</span>
+                    <button
+                        onClick={() => setPage(prev => Math.min(prev + 1, totalPages))}
+                        disabled={page === totalPages}
+                    >
+                        Next
+                    </button>
+                </div>
             </div>
         </div>
     );

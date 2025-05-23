@@ -1,4 +1,4 @@
-import {GameCreateForm} from "@/app/components/game-create-form";
+import GameCreateForm from "@/app/components/game-create-form";
 import styles from '@/app/add/page.module.css'
 
 export default function Add() {

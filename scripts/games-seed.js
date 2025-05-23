@@ -2,7 +2,7 @@ import sequelize from '../lib/sequelize.js';
 import { Game, Tag } from '../models/index.js';
 import { faker } from '@faker-js/faker';
 
-async function seed() {
+async function gamesSeed() {
     await sequelize.sync({ force: true });
 
     const tagNames = [
@@ -112,4 +112,4 @@ async function seed() {
     await sequelize.close();
 }
 
-seed();
+gamesSeed();
