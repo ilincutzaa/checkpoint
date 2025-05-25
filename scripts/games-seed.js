@@ -2,7 +2,7 @@ import sequelize from '../lib/sequelize.js';
 import { Game, Tag } from '../models/index.js';
 import { faker } from '@faker-js/faker';
 
-async function gamesSeed() {
+export default async function gamesSeed() {
     await sequelize.sync({ force: true });
 
     const tagNames = [

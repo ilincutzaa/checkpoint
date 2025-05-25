@@ -84,24 +84,6 @@ export default function GameList() {
 
             if(response.ok){
                 setSelectedGameID(null);
-                const fetchGames = async () => {
-                    setLoading(true);
-                    try {
-                        const response = await fetch('/api/games', {
-                            method: "GET"
-                        });
-                        if (!response.ok) {
-                            throw new Error('Failed to fetch games');
-                        }
-                        const data = await response.json();
-                        setGames(data);
-                    } catch (error) {
-                        console.error('Error fetching games:', error);
-                    } finally {
-                        setLoading(false);
-                    }
-                };
-
                 fetchGames();
 
             } else{
