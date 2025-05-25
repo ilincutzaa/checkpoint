@@ -1,16 +1,13 @@
-'use client'
+import { Suspense } from 'react';
+import DetailClient from './DetailClient';
+import styles from '@/app/detail/page.module.css';
 
-import {useSearchParams} from "next/navigation";
-import styles from "@/app/detail/page.module.css"
-import GameDetail from "@/app/components/game-detail";
-
-export default function Detail() {
-    const searchParams = useSearchParams();
-    const selectedGameID = searchParams.get("id");
-
+export default function DetailPage() {
     return (
         <main className={styles.main}>
-            <GameDetail selectedGameID={selectedGameID} />
+            <Suspense fallback={<div>Loading...</div>}>
+                <DetailClient />
+            </Suspense>
         </main>
-    )
+    );
 }

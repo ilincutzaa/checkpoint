@@ -228,9 +228,6 @@ export default function GameCreateForm() {
                             onChange={(e) => setDescription(e.target.value)}
                         ></textarea>
                     </div>
-                    <div>
-                        <label htmlFor="tags">Tags</label>
-                    </div>
                 </div>
             </div>
             <div className={styles.row}>

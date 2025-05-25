@@ -1,17 +1,14 @@
-'use client'
+import { Suspense } from 'react';
+import UpdateClient from './UpdateClient.js';
 
-import {useSearchParams} from "next/navigation";
-import GameUpdateForm from "@/app/components/game-update-form";
-import styles from "@/app/update/page.module.css"
+import styles from '@/app/detail/page.module.css';
 
-export default function Update () {
-    const searchParams = useSearchParams();
-
-    const selectedGameID = searchParams.get("id");
-
+export default function UpdatePage() {
     return (
         <main className={styles.main}>
-            <GameUpdateForm selectedGameID={selectedGameID} />
+            <Suspense fallback={<div>Loading...</div>}>
+                <UpdateClient />
+            </Suspense>
         </main>
-    )
+    );
 }
