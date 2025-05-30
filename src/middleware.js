@@ -1,4 +1,3 @@
-// middleware.js
 import { NextResponse } from 'next/server';
 import { jwtVerify } from 'jose';
 
@@ -13,10 +12,8 @@ export async function middleware(req) {
         if (token) {
             try {
                 await jwtVerify(token, new TextEncoder().encode(process.env.JWT_SECRET));
-                // token is valid, redirect to user dashboard
                 return NextResponse.redirect(new URL('/user-dashboard', req.url));
             } catch {
-                // token invalid or expired, let them access login/register
                 return NextResponse.next();
             }
         }
@@ -46,7 +43,9 @@ export const config = {
         '/admin-dashboard/:path*',
         '/user-dashboard/:path*',
         '/games/:path*',
-        '/login',
-        '/register'
+        '/api/games/:path*',
+        '/api/tags/:path*',
+        '/api/me/:path*',
+        '/api/logout/:path*',
     ],
 };

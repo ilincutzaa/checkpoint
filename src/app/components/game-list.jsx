@@ -233,10 +233,11 @@ export default function GameList() {
                         </tbody>
                     </table>
                 )}
-                <div className="flex gap-2 mt-4">
+                <div className={styles.paginationStyle}>
                     <button
                         onClick={() => setPage(prev => Math.max(prev - 1, 1))}
                         disabled={page === 1}
+                        className={styles.paginationBtnStyle}
                     >
                         Previous
                     </button>
@@ -244,6 +245,7 @@ export default function GameList() {
                     <button
                         onClick={() => setPage(prev => Math.min(prev + 1, totalPages))}
                         disabled={page === totalPages}
+                        className={styles.paginationBtnStyle}
                     >
                         Next
                     </button>

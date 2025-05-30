@@ -6,6 +6,7 @@ import {useEffect, useState} from "react";
 import styles from "@/app/components/game-form.module.css";
 import {enqueueRequest} from "@/app/utils/requests-queue";
 import {useConnectionStable} from "@/app/hooks/connection-status";
+import TagSelector from "@/app/components/tag-selector.jsx";
 
 export default function GameUpdateForm({selectedGameID}){
     const router = useRouter();
@@ -28,10 +29,9 @@ export default function GameUpdateForm({selectedGameID}){
     const [selectedGame, setSelectedGame] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
 
+    const [tags, setTags] = useState([]);
+
     const isConnectionStable = useConnectionStable();
-
-
-    console.log(selectedGameID);
 
     useEffect(() => {
         const fetchGame = async () => {
@@ -76,6 +76,12 @@ export default function GameUpdateForm({selectedGameID}){
 
     }, [selectedGameID]);
 
+    useEffect(() => {
+        if (selectedGame && selectedGame.Tags) {
+            setTags([...selectedGame.Tags]);
+        }
+    }, [selectedGame]);
+
     if (isLoading) {
         return <h1>Loading...</h1>;
     }
@@ -83,6 +89,16 @@ export default function GameUpdateForm({selectedGameID}){
     if(selectedGame == null) {
         console.error('Error fetching game with id:' + selectedGameID);
         return <h1>404 - Page Not Found</h1>
+    }
+
+    const handleTagSelect = (tag) => {
+        if (!tags.find(t => t.id === tag.id)) {
+            setTags([...tags, tag]);
+        }
+    };
+
+    function handleUnassignTag(tagId){
+        setTags(prevTags => prevTags.filter(tag => tag.id !== tagId));
     }
 
 
@@ -288,6 +304,27 @@ export default function GameUpdateForm({selectedGameID}){
                             value={description}
                             onChange={(e) => setDescription(e.target.value)}
                         ></textarea>
+                    </div>
+                    <div>
+                        <p className={styles.tagTxt}>Tags</p>
+                        <div className={styles.tagsContainer}>
+                            {tags.map(tag => (
+                                <div key={tag.id} className={styles.tagContainer}>
+                                    <span>{tag.name}</span>
+                                    <button
+                                        onClick={() => handleUnassignTag(tag.id)}
+                                        className={styles.xBtn}
+                                    >
+                                        &times;
+                                    </button>
+                                </div>
+                            ))}
+
+                        </div>
+                        <TagSelector
+                            onTagSelect={handleTagSelect}
+                            excludedTagIds={tags.map(tag => tag.id)}
+                        />
                     </div>
                 </div>
             </div>

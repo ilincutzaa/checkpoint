@@ -1,7 +1,6 @@
 .column{
     display: flex;
     flex-direction: column;
-    justify-content: space-evenly;
 }
 
 .row{
@@ -44,4 +43,40 @@
     border-radius: 10px;
     font-size: 90%;
     cursor: pointer;
+}
+
+.tagContainer{
+    border: 1px white;
+    background-color: rgba(58, 58, 58, 0.81);
+    display: flex;
+    flex-direction: row;
+    gap: 0.7vh;
+    padding: 0.3vh;
+}
+
+.xBtn{
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 100%;
+    padding-right: 0.3vh;
+}
+
+.tagsContainer{
+    display: flex;
+    flex-direction: row;
+    gap: 1vh;
+}
+
+.tagTxt{
+    font-size: 18px;
+}
+
+.plusBtn{
+    background-color: rgba(58, 58, 58, 0.81);
+    border: none;
+    cursor: pointer;
+    font-size: 100%;
+    padding-right: 0.7vh;
+    padding-left: 0.7vh;
 }

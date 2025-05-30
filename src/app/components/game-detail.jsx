@@ -38,11 +38,11 @@ export default function GameDetail({selectedGameID}) {
         console.error('Error fetching game with id:' + selectedGameID);
         return <h1>404 - Page Not Found</h1>
     }
-
     return (
         <main className={styles.main}>
             <div className={styles.info}>
                 <h1>{selectedGame.name}</h1>
+
                 <p>Genre: {selectedGame.genre}</p>
                 <p>Platform: {selectedGame.platform}</p>
                 <p>Backlog Priority: {selectedGame.backlogPriority}</p>
@@ -53,6 +53,14 @@ export default function GameDetail({selectedGameID}) {
                 <p>You finished this game for the first time on {selectedGame.dateFirstFinished}</p>
                 <p>You gave this game {selectedGame.rating} stars</p>
                 <p>You described this game as: {selectedGame.description}</p>
+
+                <div>
+                    {selectedGame?.Tags?.length > 0 ? (
+                        <p>Tags: {selectedGame.Tags.map(tag => tag.name).join(', ')}</p>
+                    ) : (
+                        <p>No tags for this game.</p>
+                    )}
+                </div>
             </div>
 
             <div>

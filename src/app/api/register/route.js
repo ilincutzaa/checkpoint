@@ -9,6 +9,10 @@ export async function POST(request) {
     const { username, password, role } = await request.json();
 
     try {
+        if (process.env.ALLOW_REGISTRATION !== 'true') {
+            return NextResponse.json({ error: 'Registration disabled' }, { status: 403 });
+        }
+
         const existingUser = await User.findOne({ where: { username } });
         if (existingUser) {
             return NextResponse.json({ error: 'Username already taken' }, { status: 400 });
