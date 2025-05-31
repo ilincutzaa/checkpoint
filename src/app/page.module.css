@@ -14,7 +14,7 @@
 
 .loginButton{
   font-size: 25px;
-  height: fit-content;
+  height: 5vh;
   background-color: transparent;
   border: 1px solid rgba(255, 255, 255, 0.62);
   padding: 2px;
@@ -24,7 +24,7 @@
 
 .signupButton{
   font-size: 25px;
-  height: fit-content;
+  height: 5vh;
   background-color: transparent;
   border: 1px solid rgba(255, 255, 255, 0.62);
   padding: 2px;
@@ -36,14 +36,17 @@
   display: flex;
   justify-content: right;
   flex-direction: row;
-  height: fit-content;
   gap: 1vh;
+  height: 5vh;
 }
 
 .mainContent{
-  padding-top: 10vh;
   display: flex;
   flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 95vh;
+  margin: 0;
 }
 
 .welcomeText{
