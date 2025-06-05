@@ -321,10 +321,12 @@ export default function GameUpdateForm({selectedGameID}){
                             ))}
 
                         </div>
-                        <TagSelector
-                            onTagSelect={handleTagSelect}
-                            excludedTagIds={tags.map(tag => tag.id)}
-                        />
+                        <div>
+                            <TagSelector
+                                onTagSelect={handleTagSelect}
+                                excludedTagIds={tags.map(tag => tag.id)}
+                            />
+                        </div>
                     </div>
                 </div>
             </div>
