@@ -27,7 +27,10 @@ export async function middleware(req) {
     try {
         const { payload } = await jwtVerify(token, new TextEncoder().encode(process.env.JWT_SECRET));
 
-        req.user = payload;
+        req.userId = payload.userId;
+        req.username = payload.username;
+        req.role = payload.role;
+        req.is2faEnabled = payload.is2faEnabled;
 
         return NextResponse.next();
     } catch (err) {

@@ -22,7 +22,7 @@ export async function POST(request) {
 
         const user = await User.create({ username, password: hashedPassword, role });
 
-        const token = jwt.sign({ userId: user.id, role: user.role }, SECRET, { expiresIn: '1h' });
+        const token = jwt.sign({ userId: user.id, role: user.role, username: user.username }, SECRET, { expiresIn: '1h' });
 
         const res = NextResponse.json({
             message: 'Signed up successfully',

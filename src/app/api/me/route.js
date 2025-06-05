@@ -9,7 +9,13 @@ export async function GET(req) {
 
     try {
         const { payload } = await jwtVerify(token, new TextEncoder().encode(process.env.JWT_SECRET));
-        return new Response(JSON.stringify({ loggedIn: true, role: payload.role }), { status: 200 });
+        return new Response(JSON.stringify({
+            loggedIn: true,
+            role: payload.role,
+            username: payload.username,
+            userId: payload.userId,
+            is2faEnabled: payload.is2faEnabled,
+        }), { status: 200 });
     } catch {
         return new Response(JSON.stringify({ loggedIn: false }), { status: 200 });
     }

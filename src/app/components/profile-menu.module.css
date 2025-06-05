@@ -1,0 +1,41 @@
+.menu{
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.img {
+    cursor: pointer;
+}
+
+.ul{
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    list-style: none;
+    right: 0;
+    top: 110%;
+    background-color: #222;
+    color: #fff;
+    border: 1px solid #333;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    margin: 0;
+    z-index: 1000;
+}
+
+.li{
+    margin: 8px;
+    cursor: pointer;
+}
+
+.button{
+    background-color: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.62);
+    padding: 2px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+

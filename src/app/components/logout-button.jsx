@@ -1,8 +1,6 @@
-import {useRouter} from "next/navigation";
-import styles from "@/app/components/logout-button.module.css";
+import styles from "@/app/components/button.module.css";
 
 export default function LogoutButton(){
-    const router = useRouter();
 
     const handleLogout = async () => {
         try {
@@ -11,7 +9,7 @@ export default function LogoutButton(){
             });
 
             if (res.ok) {
-                router.push('/');
+                window.location.replace('/')
             } else {
                 console.error('Logout failed');
             }

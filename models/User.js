@@ -18,6 +18,12 @@ const User = sequelize.define('User', {
         validate: {
             isIn: [['user', 'admin']]
         }
+    },
+    twoFactorSecret: {
+        type: DataTypes.STRING,
+    },
+    isTwoFactorVerified: {
+        type: DataTypes.BOOLEAN
     }
 });
 

@@ -19,11 +19,13 @@ export async function POST(request) {
             return NextResponse.json({ error: 'Invalid username or password' }, { status: 400 });
         }
 
-        const token = jwt.sign({ userId: user.id, role: user.role }, SECRET, { expiresIn: '1h' });
+        const token = jwt.sign({ userId: user.id, role: user.role, username: user.username, is2faEnabled: user.isTwoFactorVerified }, SECRET, { expiresIn: '1h' });
+
 
         const res = NextResponse.json({
             message: 'Logged in successfully',
             role: user.role,
+
         });
 
         res.cookies.set('token', token, {
