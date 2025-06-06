@@ -6,7 +6,7 @@ import styles from "./modal.module.css"
 export default function TwoFactorSetupModal({onClose, on2faVerified}) {
     const [qrCodeUrl, setQrCodeUrl] = useState("");
     const [userCode, setUserCode] = useState("");
-    const [error, setError] = useState(false);
+    const [error, setError] = useState("");
     const [success, setSuccess] = useState(false);
     const [verifying, setVerifying] = useState(false);
 
@@ -39,6 +39,17 @@ export default function TwoFactorSetupModal({onClose, on2faVerified}) {
         setVerifying(false);
     }
 
+    async function handleClose() {
+        if(!success){
+            fetch("/api/2fa/teardown", {
+                method: "POST",
+            })
+                .then((res) => res.text())
+                .catch((error) => {console.error(error); });
+        }
+        onClose();
+    }
+
     return (
         <div className={styles.mainContainer}>
             <div className={styles.container}>
@@ -66,7 +77,7 @@ export default function TwoFactorSetupModal({onClose, on2faVerified}) {
                             disabled={verifying || success}
                     >{success ? "Verified ✅" : "Verify"}</button>
                 )}
-                <button onClick={onClose} className={styles.button}>Close</button>
+                <button onClick={handleClose} className={styles.button}>Close</button>
             </div>
         </div>
     )
